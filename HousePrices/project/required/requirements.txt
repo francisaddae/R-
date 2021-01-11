@@ -1,0 +1,59 @@
+#list of packaged for python
+
+#pandas==0.18.1
+#csv
+#os
+#awscli
+#boto3
+#
+
+summary(model1)
+
+#YrSold Eliminated
+model2 <- lm(SalePrice ~ LotFrontage + LotArea + BldgType + OverallQual + OverallCond + FullBath + HalfBath + 
+               TotRmsAbvGrd + YearBuilt + TotalBsmtSF + BedroomAbvGr + Heating + GrLivArea + PoolArea, data = traindt)
+summary(model2)
+
+#PoolArea Eliminated
+model3 <- lm(SalePrice ~ LotFrontage + LotArea + OverallQual + OverallCond + FullBath + HalfBath + 
+                 TotRmsAbvGrd + YearBuilt + TotalBsmtSF + BedroomAbvGr + Heating + GrLivArea , data = traindt)
+summary(model3)
+
+#BldgType Eliminated
+model4 <- lm(SalePrice ~ LotFrontage + LotArea + OverallQual + OverallCond + FullBath + HalfBath + 
+               TotRmsAbvGrd + YearBuilt + TotalBsmtSF + BedroomAbvGr + Heating + GrLivArea , data = traindt)
+summary(model4)
+
+model5 <- lm(SalePrice ~LotFrontage + LotArea + OverallQual + OverallCond + FullBath + HalfBath + 
+               TotRmsAbvGrd + YearBuilt + TotalBsmtSF +  GrLivArea, data = traindt )
+summary(model5)
+#Best predictors --> model4
+
+#### Method 2. #### 
+
+#Using the best predictors to great a multiple regrssion model 
+pred <- predict(model4,newdata = testdata[,.(LotFrontage,LotArea,OverallQual,OverallCond,FullBath,HalfBath,TotRmsAbvGrd,YearBuilt,
+                                              TotalBsmtSF,BedroomAbvGr,Heating,GrLivArea)])
+final <- data.table(Id = 1:5000, SalePrice = pred)
+final[is.na(SalePrice), SalePrice := mean(traindt$SalePrice)]
+
+
+modl <- lm(SalePrice ~.,data = traindt)
+pred2 <- predict(modl, newdata = testdata)
+final2 <- data.table(Id = 1:5000, SalePrice = pred2)
+final2[is.na(SalePrice), SalePrice := mean(traindt$SalePrice)]
+
+
+
+#savedata
+#fwrite(final2, file = "project/volume/data/processed/submission2.csv")
+
+#### Method 3. ####
+#using support vector machine 
+library(e1071)
+reg <- svm(formula = SalePrice ~.,data = traindt, type = 'eps-regression')
+pred3 <- predict(reg, newdata = testdt)
+
+final3 <- data.table(Id = 1:5000,SalePrice = pred3)
+final3[is.na(SalePrice), SalePrice := mean(traindt$SalePrice)]
+
