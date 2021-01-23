@@ -1,0 +1,879 @@
+\PassOptionsToPackage{unicode=true}{hyperref} % options for packages loaded elsewhere
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provides euro and other symbols
+\else % if luatex or xelatex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage[]{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\usepackage{hyperref}
+\hypersetup{
+            pdftitle={Exploartory Analysis on Credit Card Data},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+% set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+
+
+\title{Exploartory Analysis on Credit Card Data}
+\author{}
+\date{\vspace{-2.5em}}
+
+\begin{document}
+\maketitle
+
+Import Statements
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(data.table)}
+\KeywordTok{library}\NormalTok{(ggplot2)}
+\end{Highlighting}
+\end{Shaded}
+
+Data / Data Cleaning/ Transformation
+
+The data will be cleaned, transformed and viewed before any analysis
+work is done on it
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df <-}\StringTok{ }\KeywordTok{fread}\NormalTok{(}\StringTok{'BankChurners.csv'}\NormalTok{)}
+\NormalTok{df}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##        CLIENTNUM    Attrition_Flag Customer_Age Gender Dependent_count
+##     1: 768805383 Existing Customer           45      M               3
+##     2: 818770008 Existing Customer           49      F               5
+##     3: 713982108 Existing Customer           51      M               3
+##     4: 769911858 Existing Customer           40      F               4
+##     5: 709106358 Existing Customer           40      M               3
+##    ---                                                                
+## 10123: 772366833 Existing Customer           50      M               2
+## 10124: 710638233 Attrited Customer           41      M               2
+## 10125: 716506083 Attrited Customer           44      F               1
+## 10126: 717406983 Attrited Customer           30      M               2
+## 10127: 714337233 Attrited Customer           43      F               2
+##        Education_Level Marital_Status Income_Category Card_Category
+##     1:     High School        Married     $60K - $80K          Blue
+##     2:        Graduate         Single  Less than $40K          Blue
+##     3:        Graduate        Married    $80K - $120K          Blue
+##     4:     High School        Unknown  Less than $40K          Blue
+##     5:      Uneducated        Married     $60K - $80K          Blue
+##    ---                                                             
+## 10123:        Graduate         Single     $40K - $60K          Blue
+## 10124:         Unknown       Divorced     $40K - $60K          Blue
+## 10125:     High School        Married  Less than $40K          Blue
+## 10126:        Graduate        Unknown     $40K - $60K          Blue
+## 10127:        Graduate        Married  Less than $40K        Silver
+##        Months_on_book Total_Relationship_Count Months_Inactive_12_mon
+##     1:             39                        5                      1
+##     2:             44                        6                      1
+##     3:             36                        4                      1
+##     4:             34                        3                      4
+##     5:             21                        5                      1
+##    ---                                                               
+## 10123:             40                        3                      2
+## 10124:             25                        4                      2
+## 10125:             36                        5                      3
+## 10126:             36                        4                      3
+## 10127:             25                        6                      2
+##        Contacts_Count_12_mon Credit_Limit Total_Revolving_Bal Avg_Open_To_Buy
+##     1:                     3        12691                 777           11914
+##     2:                     2         8256                 864            7392
+##     3:                     0         3418                   0            3418
+##     4:                     1         3313                2517             796
+##     5:                     0         4716                   0            4716
+##    ---                                                                       
+## 10123:                     3         4003                1851            2152
+## 10124:                     3         4277                2186            2091
+## 10125:                     4         5409                   0            5409
+## 10126:                     3         5281                   0            5281
+## 10127:                     4        10388                1961            8427
+##        Total_Amt_Chng_Q4_Q1 Total_Trans_Amt Total_Trans_Ct Total_Ct_Chng_Q4_Q1
+##     1:                1.335            1144             42               1.625
+##     2:                1.541            1291             33               3.714
+##     3:                2.594            1887             20               2.333
+##     4:                1.405            1171             20               2.333
+##     5:                2.175             816             28               2.500
+##    ---                                                                        
+## 10123:                0.703           15476            117               0.857
+## 10124:                0.804            8764             69               0.683
+## 10125:                0.819           10291             60               0.818
+## 10126:                0.535            8395             62               0.722
+## 10127:                0.703           10294             61               0.649
+##        Avg_Utilization_Ratio
+##     1:                 0.061
+##     2:                 0.105
+##     3:                 0.000
+##     4:                 0.760
+##     5:                 0.000
+##    ---                      
+## 10123:                 0.462
+## 10124:                 0.511
+## 10125:                 0.000
+## 10126:                 0.000
+## 10127:                 0.189
+##        Naive_Bayes_Classifier_Attrition_Flag_Card_Category_Contacts_Count_12_mon_Dependent_count_Education_Level_Months_Inactive_12_mon_1
+##     1:                                                                                                                         9.3448e-05
+##     2:                                                                                                                         5.6861e-05
+##     3:                                                                                                                         2.1081e-05
+##     4:                                                                                                                         1.3366e-04
+##     5:                                                                                                                         2.1676e-05
+##    ---                                                                                                                                   
+## 10123:                                                                                                                         1.9143e-04
+## 10124:                                                                                                                         9.9527e-01
+## 10125:                                                                                                                         9.9788e-01
+## 10126:                                                                                                                         9.9671e-01
+## 10127:                                                                                                                         9.9662e-01
+##        Naive_Bayes_Classifier_Attrition_Flag_Card_Category_Contacts_Count_12_mon_Dependent_count_Education_Level_Months_Inactive_12_mon_2
+##     1:                                                                                                                         0.99991000
+##     2:                                                                                                                         0.99994000
+##     3:                                                                                                                         0.99998000
+##     4:                                                                                                                         0.99987000
+##     5:                                                                                                                         0.99998000
+##    ---                                                                                                                                   
+## 10123:                                                                                                                         0.99981000
+## 10124:                                                                                                                         0.00472896
+## 10125:                                                                                                                         0.00211827
+## 10126:                                                                                                                         0.00329379
+## 10127:                                                                                                                         0.00337654
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Column Name and Descriptions }
+\CommentTok{#CLIENTNUM   :  Client number. Unique identifier for the customer holding the account}
+\CommentTok{#Attrition_Flag: Internal event (customer activity) variable - if the account is closed then 1 else 0}
+\CommentTok{#Customer_Age:   Demographic variable - Customer's Age in Years}
+\CommentTok{#Gender      :   Demographic variable - M=Male, F=Female}
+\CommentTok{#Dependent_count:Demographic variable - Number of dependents}
+\CommentTok{#Education_Level: Demographic variable - Educational Qualification of the account holder (example: high school, college #graduate, etc.)}
+\CommentTok{#Marital_Status : Demographic variable - Married, Single, Divorced, Unknown}
+\CommentTok{#Income_Category: Demographic variable - Annual Income Category of the account holder (< $40K, $40K - 60K, $60K - $80K, #$80K-$120K, > $120K, Unknown)}
+\CommentTok{#Card_Category  : Product Variable - Type of Card (Blue, Silver, Gold, Platinum)}
+\CommentTok{#Months_on_book : Period of relationship with bank}
+\CommentTok{#Total_Relationship_Count: Total no. of products held by the customer}
+\CommentTok{#Months_Inactive_12_mon  : No. of months inactive in the last 12 months}
+\CommentTok{#Contacts_Count_12_mon   : No. of Contacts in the last 12 months}
+\CommentTok{#Credit_Limit            : Credit Limit on the Credit Card}
+\CommentTok{#Total_Revolving_Bal     : Total Revolving Balance on the Credit Card}
+\CommentTok{#Avg_Open_To_Buy         : Open to Buy Credit Line (Average of last 12 months)}
+\CommentTok{#Total_Amt_Chng_Q4_Q1    : Change in Transaction Amount (Q4 over Q1)}
+\CommentTok{#Total_Trans_Amt         : Total Transaction Amount (Last 12 months)}
+\CommentTok{#Total_Trans_Ct          : Total Transaction Count (Last 12 months)}
+\CommentTok{#Total_Ct_Chng_Q4_Q1     : Change in Transaction Count (Q4 over Q1)}
+\CommentTok{#Avg_Utilization_Ratio   : Average Card Utilization Ratio  }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Structure of data}
+\KeywordTok{str}\NormalTok{(df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Classes 'data.table' and 'data.frame':   10127 obs. of  23 variables:
+##  $ CLIENTNUM                                                                                                                         : int  768805383 818770008 713982108 769911858 709106358 713061558 810347208 818906208 710930508 719661558 ...
+##  $ Attrition_Flag                                                                                                                    : chr  "Existing Customer" "Existing Customer" "Existing Customer" "Existing Customer" ...
+##  $ Customer_Age                                                                                                                      : int  45 49 51 40 40 44 51 32 37 48 ...
+##  $ Gender                                                                                                                            : chr  "M" "F" "M" "F" ...
+##  $ Dependent_count                                                                                                                   : int  3 5 3 4 3 2 4 0 3 2 ...
+##  $ Education_Level                                                                                                                   : chr  "High School" "Graduate" "Graduate" "High School" ...
+##  $ Marital_Status                                                                                                                    : chr  "Married" "Single" "Married" "Unknown" ...
+##  $ Income_Category                                                                                                                   : chr  "$60K - $80K" "Less than $40K" "$80K - $120K" "Less than $40K" ...
+##  $ Card_Category                                                                                                                     : chr  "Blue" "Blue" "Blue" "Blue" ...
+##  $ Months_on_book                                                                                                                    : int  39 44 36 34 21 36 46 27 36 36 ...
+##  $ Total_Relationship_Count                                                                                                          : int  5 6 4 3 5 3 6 2 5 6 ...
+##  $ Months_Inactive_12_mon                                                                                                            : int  1 1 1 4 1 1 1 2 2 3 ...
+##  $ Contacts_Count_12_mon                                                                                                             : int  3 2 0 1 0 2 3 2 0 3 ...
+##  $ Credit_Limit                                                                                                                      : num  12691 8256 3418 3313 4716 ...
+##  $ Total_Revolving_Bal                                                                                                               : int  777 864 0 2517 0 1247 2264 1396 2517 1677 ...
+##  $ Avg_Open_To_Buy                                                                                                                   : num  11914 7392 3418 796 4716 ...
+##  $ Total_Amt_Chng_Q4_Q1                                                                                                              : num  1.33 1.54 2.59 1.41 2.17 ...
+##  $ Total_Trans_Amt                                                                                                                   : int  1144 1291 1887 1171 816 1088 1330 1538 1350 1441 ...
+##  $ Total_Trans_Ct                                                                                                                    : int  42 33 20 20 28 24 31 36 24 32 ...
+##  $ Total_Ct_Chng_Q4_Q1                                                                                                               : num  1.62 3.71 2.33 2.33 2.5 ...
+##  $ Avg_Utilization_Ratio                                                                                                             : num  0.061 0.105 0 0.76 0 0.311 0.066 0.048 0.113 0.144 ...
+##  $ Naive_Bayes_Classifier_Attrition_Flag_Card_Category_Contacts_Count_12_mon_Dependent_count_Education_Level_Months_Inactive_12_mon_1: num  9.34e-05 5.69e-05 2.11e-05 1.34e-04 2.17e-05 ...
+##  $ Naive_Bayes_Classifier_Attrition_Flag_Card_Category_Contacts_Count_12_mon_Dependent_count_Education_Level_Months_Inactive_12_mon_2: num  1 1 1 1 1 ...
+##  - attr(*, ".internal.selfref")=<externalptr>
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Summary of data}
+\KeywordTok{summary}\NormalTok{(df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    CLIENTNUM         Attrition_Flag      Customer_Age      Gender         
+##  Min.   :708082083   Length:10127       Min.   :26.00   Length:10127      
+##  1st Qu.:713036770   Class :character   1st Qu.:41.00   Class :character  
+##  Median :717926358   Mode  :character   Median :46.00   Mode  :character  
+##  Mean   :739177606                      Mean   :46.33                     
+##  3rd Qu.:773143533                      3rd Qu.:52.00                     
+##  Max.   :828343083                      Max.   :73.00                     
+##  Dependent_count Education_Level    Marital_Status     Income_Category   
+##  Min.   :0.000   Length:10127       Length:10127       Length:10127      
+##  1st Qu.:1.000   Class :character   Class :character   Class :character  
+##  Median :2.000   Mode  :character   Mode  :character   Mode  :character  
+##  Mean   :2.346                                                           
+##  3rd Qu.:3.000                                                           
+##  Max.   :5.000                                                           
+##  Card_Category      Months_on_book  Total_Relationship_Count
+##  Length:10127       Min.   :13.00   Min.   :1.000           
+##  Class :character   1st Qu.:31.00   1st Qu.:3.000           
+##  Mode  :character   Median :36.00   Median :4.000           
+##                     Mean   :35.93   Mean   :3.813           
+##                     3rd Qu.:40.00   3rd Qu.:5.000           
+##                     Max.   :56.00   Max.   :6.000           
+##  Months_Inactive_12_mon Contacts_Count_12_mon  Credit_Limit  
+##  Min.   :0.000          Min.   :0.000         Min.   : 1438  
+##  1st Qu.:2.000          1st Qu.:2.000         1st Qu.: 2555  
+##  Median :2.000          Median :2.000         Median : 4549  
+##  Mean   :2.341          Mean   :2.455         Mean   : 8632  
+##  3rd Qu.:3.000          3rd Qu.:3.000         3rd Qu.:11068  
+##  Max.   :6.000          Max.   :6.000         Max.   :34516  
+##  Total_Revolving_Bal Avg_Open_To_Buy Total_Amt_Chng_Q4_Q1 Total_Trans_Amt
+##  Min.   :   0        Min.   :    3   Min.   :0.0000       Min.   :  510  
+##  1st Qu.: 359        1st Qu.: 1324   1st Qu.:0.6310       1st Qu.: 2156  
+##  Median :1276        Median : 3474   Median :0.7360       Median : 3899  
+##  Mean   :1163        Mean   : 7469   Mean   :0.7599       Mean   : 4404  
+##  3rd Qu.:1784        3rd Qu.: 9859   3rd Qu.:0.8590       3rd Qu.: 4741  
+##  Max.   :2517        Max.   :34516   Max.   :3.3970       Max.   :18484  
+##  Total_Trans_Ct   Total_Ct_Chng_Q4_Q1 Avg_Utilization_Ratio
+##  Min.   : 10.00   Min.   :0.0000      Min.   :0.0000       
+##  1st Qu.: 45.00   1st Qu.:0.5820      1st Qu.:0.0230       
+##  Median : 67.00   Median :0.7020      Median :0.1760       
+##  Mean   : 64.86   Mean   :0.7122      Mean   :0.2749       
+##  3rd Qu.: 81.00   3rd Qu.:0.8180      3rd Qu.:0.5030       
+##  Max.   :139.00   Max.   :3.7140      Max.   :0.9990       
+##  Naive_Bayes_Classifier_Attrition_Flag_Card_Category_Contacts_Count_12_mon_Dependent_count_Education_Level_Months_Inactive_12_mon_1
+##  Min.   :0.0000077                                                                                                                 
+##  1st Qu.:0.0000990                                                                                                                 
+##  Median :0.0001815                                                                                                                 
+##  Mean   :0.1599975                                                                                                                 
+##  3rd Qu.:0.0003373                                                                                                                 
+##  Max.   :0.9995800                                                                                                                 
+##  Naive_Bayes_Classifier_Attrition_Flag_Card_Category_Contacts_Count_12_mon_Dependent_count_Education_Level_Months_Inactive_12_mon_2
+##  Min.   :0.00042                                                                                                                   
+##  1st Qu.:0.99966                                                                                                                   
+##  Median :0.99982                                                                                                                   
+##  Mean   :0.84000                                                                                                                   
+##  3rd Qu.:0.99990                                                                                                                   
+##  Max.   :0.99999
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Factorizing Categorical Variables}
+\NormalTok{df}\OperatorTok{$}\NormalTok{CLIENTNUM <-}\StringTok{ }\KeywordTok{as.factor}\NormalTok{(df}\OperatorTok{$}\NormalTok{CLIENTNUM)}
+\NormalTok{df}\OperatorTok{$}\NormalTok{Attrition_Flag <-}\StringTok{ }\KeywordTok{as.factor}\NormalTok{(df}\OperatorTok{$}\NormalTok{Attrition_Flag)}
+\NormalTok{df}\OperatorTok{$}\NormalTok{Gender         <-}\StringTok{ }\KeywordTok{as.factor}\NormalTok{(df}\OperatorTok{$}\NormalTok{Gender)}
+\NormalTok{df}\OperatorTok{$}\NormalTok{Education_Level <-}\StringTok{ }\KeywordTok{as.factor}\NormalTok{(df}\OperatorTok{$}\NormalTok{Education_Level)}
+\NormalTok{df}\OperatorTok{$}\NormalTok{Marital_Status <-}\StringTok{ }\KeywordTok{as.factor}\NormalTok{(df}\OperatorTok{$}\NormalTok{Marital_Status)}
+\NormalTok{df}\OperatorTok{$}\NormalTok{Income_Category <-}\StringTok{ }\KeywordTok{as.factor}\NormalTok{(df}\OperatorTok{$}\NormalTok{Income_Category)}
+\NormalTok{df}\OperatorTok{$}\NormalTok{Card_Category <-}\StringTok{ }\KeywordTok{as.factor}\NormalTok{(df}\OperatorTok{$}\NormalTok{Card_Category)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#drop last two columns due to relevancy }
+\NormalTok{df <-}\StringTok{ }\NormalTok{df[,}\OperatorTok{-}\NormalTok{(}\DecValTok{22}\OperatorTok{:}\DecValTok{23}\NormalTok{)]}
+\KeywordTok{str}\NormalTok{(df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Classes 'data.table' and 'data.frame':   10127 obs. of  21 variables:
+##  $ CLIENTNUM               : Factor w/ 10127 levels "708082083","708083283",..: 7153 9813 3054 7205 502 2545 9494 9819 1402 5894 ...
+##  $ Attrition_Flag          : Factor w/ 2 levels "Attrited Customer",..: 2 2 2 2 2 2 2 2 2 2 ...
+##  $ Customer_Age            : int  45 49 51 40 40 44 51 32 37 48 ...
+##  $ Gender                  : Factor w/ 2 levels "F","M": 2 1 2 1 2 2 2 2 2 2 ...
+##  $ Dependent_count         : int  3 5 3 4 3 2 4 0 3 2 ...
+##  $ Education_Level         : Factor w/ 7 levels "College","Doctorate",..: 4 3 3 4 6 3 7 4 6 3 ...
+##  $ Marital_Status          : Factor w/ 4 levels "Divorced","Married",..: 2 3 2 4 2 2 2 4 3 3 ...
+##  $ Income_Category         : Factor w/ 6 levels "$120K +","$40K - $60K",..: 3 5 4 5 3 2 1 3 3 4 ...
+##  $ Card_Category           : Factor w/ 4 levels "Blue","Gold",..: 1 1 1 1 1 1 2 4 1 1 ...
+##  $ Months_on_book          : int  39 44 36 34 21 36 46 27 36 36 ...
+##  $ Total_Relationship_Count: int  5 6 4 3 5 3 6 2 5 6 ...
+##  $ Months_Inactive_12_mon  : int  1 1 1 4 1 1 1 2 2 3 ...
+##  $ Contacts_Count_12_mon   : int  3 2 0 1 0 2 3 2 0 3 ...
+##  $ Credit_Limit            : num  12691 8256 3418 3313 4716 ...
+##  $ Total_Revolving_Bal     : int  777 864 0 2517 0 1247 2264 1396 2517 1677 ...
+##  $ Avg_Open_To_Buy         : num  11914 7392 3418 796 4716 ...
+##  $ Total_Amt_Chng_Q4_Q1    : num  1.33 1.54 2.59 1.41 2.17 ...
+##  $ Total_Trans_Amt         : int  1144 1291 1887 1171 816 1088 1330 1538 1350 1441 ...
+##  $ Total_Trans_Ct          : int  42 33 20 20 28 24 31 36 24 32 ...
+##  $ Total_Ct_Chng_Q4_Q1     : num  1.62 3.71 2.33 2.33 2.5 ...
+##  $ Avg_Utilization_Ratio   : num  0.061 0.105 0 0.76 0 0.311 0.066 0.048 0.113 0.144 ...
+##  - attr(*, ".internal.selfref")=<externalptr>
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{################################################### Exploratory Data Analysis #################################################}
+
+\CommentTok{#Percentage of Attrition Flag }
+\NormalTok{a <-}\StringTok{ }\NormalTok{df[,}\KeywordTok{list}\NormalTok{(}\DataTypeTok{numPeps =}\NormalTok{ .N), by =}\StringTok{ }\NormalTok{Attrition_Flag]}
+\NormalTok{a}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       Attrition_Flag numPeps
+## 1: Existing Customer    8500
+## 2: Attrited Customer    1627
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ggplot}\NormalTok{(a, }\KeywordTok{aes}\NormalTok{(}\StringTok{""}\NormalTok{, numPeps, }\DataTypeTok{fill =}\NormalTok{ Attrition_Flag)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_bar}\NormalTok{(}\DataTypeTok{stat =} \StringTok{'identity'}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{coord_polar}\NormalTok{(}\DataTypeTok{theta =} \StringTok{'y'}\NormalTok{, }\DataTypeTok{start =} \DecValTok{0}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{title =} \StringTok{'Attrition'}\NormalTok{, }\DataTypeTok{x =} \StringTok{''}\NormalTok{, }\DataTypeTok{y =} \StringTok{''}\NormalTok{, }\DataTypeTok{fill =} \StringTok{'Attrition'}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_void}\NormalTok{()}\OperatorTok{+}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_text}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{label =} \KeywordTok{paste}\NormalTok{(numPeps}\OperatorTok{/}\DecValTok{100}\NormalTok{,}\StringTok{"%"}\NormalTok{)), }
+                                                            \DataTypeTok{size =} \DecValTok{5}\NormalTok{, }\DataTypeTok{position =} \KeywordTok{position_stack}\NormalTok{(}\DataTypeTok{vjust =} \FloatTok{0.5}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{card2_files/figure-latex/unnamed-chunk-8-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Precentage of Attrition Flag based on Gender }
+\NormalTok{df[,.N, by =}\StringTok{ }\NormalTok{.(Attrition_Flag,Gender)]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       Attrition_Flag Gender    N
+## 1: Existing Customer      M 4072
+## 2: Existing Customer      F 4428
+## 3: Attrited Customer      F  930
+## 4: Attrited Customer      M  697
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ggplot}\NormalTok{(df[,.N, }\DataTypeTok{by =}\NormalTok{ .(Attrition_Flag,Gender)], }\KeywordTok{aes}\NormalTok{(Gender, N, }\DataTypeTok{fill =}\NormalTok{ Attrition_Flag)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_bar}\NormalTok{(}\DataTypeTok{stat =} \StringTok{'identity'}\NormalTok{,}\DataTypeTok{position =} \StringTok{'dodge'}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{title =} \StringTok{'Attrition Flag based on Gender'}\NormalTok{, }\DataTypeTok{x =} \StringTok{'Gender'}\NormalTok{, }\DataTypeTok{y =} \StringTok{'# of Clients'}\NormalTok{, }\DataTypeTok{fill =} \StringTok{'Attrition'}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{card2_files/figure-latex/unnamed-chunk-9-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#How does Attrition affect Marital Status?}
+\NormalTok{df[,.N, by =}\StringTok{ }\NormalTok{.(Attrition_Flag,Marital_Status)]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       Attrition_Flag Marital_Status    N
+## 1: Existing Customer        Married 3978
+## 2: Existing Customer         Single 3275
+## 3: Existing Customer        Unknown  620
+## 4: Existing Customer       Divorced  627
+## 5: Attrited Customer        Married  709
+## 6: Attrited Customer         Single  668
+## 7: Attrited Customer        Unknown  129
+## 8: Attrited Customer       Divorced  121
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ggplot}\NormalTok{(df[,.N, }\DataTypeTok{by =}\NormalTok{ .(Attrition_Flag,Marital_Status)], }\KeywordTok{aes}\NormalTok{(Marital_Status,N, }\DataTypeTok{fill =}\NormalTok{ Attrition_Flag)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_bar}\NormalTok{(}\DataTypeTok{stat =} \StringTok{'identity'}\NormalTok{,}\DataTypeTok{position =} \StringTok{'dodge'}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{title =} \StringTok{'Attrition Flag based on Martial Status'}\NormalTok{, }\DataTypeTok{x =} \StringTok{'Marital Status'}\NormalTok{, }\DataTypeTok{y =} \StringTok{'# of Clients'}\NormalTok{, }\DataTypeTok{fill =} \StringTok{'Attrition'}\NormalTok{)  }\OperatorTok{+}\StringTok{ }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{card2_files/figure-latex/unnamed-chunk-10-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#How does Atrition affect Education?}
+\KeywordTok{ggplot}\NormalTok{( df[,.N, }\DataTypeTok{by =}\NormalTok{ .(Attrition_Flag,Education_Level)], }\KeywordTok{aes}\NormalTok{(}\StringTok{""}\NormalTok{, N, }\DataTypeTok{fill =}\NormalTok{ Education_Level)) }\OperatorTok{+}\StringTok{  }\KeywordTok{geom_bar}\NormalTok{(}\DataTypeTok{stat =} \StringTok{'identity'}\NormalTok{, }\DataTypeTok{position =} \StringTok{'dodge'}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{scale_fill_brewer}\NormalTok{(}\DataTypeTok{palette =} \StringTok{'BrBG'}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{scale_y_log10}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{)) }\OperatorTok{+}\StringTok{ }\KeywordTok{facet_wrap}\NormalTok{(}\OperatorTok{~}\NormalTok{Attrition_Flag) }\OperatorTok{+}\StringTok{ }\KeywordTok{labs}\NormalTok{( }\DataTypeTok{title =} \StringTok{'Attrition By Education Level'}\NormalTok{, }\DataTypeTok{x =} \StringTok{'Attrition'}\NormalTok{, }\DataTypeTok{y =} \StringTok{'# of Clients'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{card2_files/figure-latex/unnamed-chunk-11-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Perecntage of Clients by Gender}
+\NormalTok{b<-}\StringTok{ }\NormalTok{df[,.N, by =}\StringTok{ }\NormalTok{Gender]}
+\NormalTok{b }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    Gender    N
+## 1:      M 4769
+## 2:      F 5358
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ggplot}\NormalTok{(b, }\KeywordTok{aes}\NormalTok{(}\StringTok{" "}\NormalTok{, N, }\DataTypeTok{fill =}\NormalTok{ Gender)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_bar}\NormalTok{(}\DataTypeTok{stat =} \StringTok{'identity'}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{coord_polar}\NormalTok{(}\DataTypeTok{theta =} \StringTok{'y'}\NormalTok{, }\DataTypeTok{start =} \DecValTok{0}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{theme_void}\NormalTok{()}\OperatorTok{+}\StringTok{ }\KeywordTok{geom_text}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{label =} \KeywordTok{paste}\NormalTok{(N}\OperatorTok{/}\DecValTok{100}\NormalTok{,}\StringTok{"%"}\NormalTok{)), }\DataTypeTok{size =} \DecValTok{5}\NormalTok{, }\DataTypeTok{position =} \KeywordTok{position_stack}\NormalTok{(}\DataTypeTok{vjust =} \FloatTok{0.5}\NormalTok{))}\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{labs}\NormalTok{( }\DataTypeTok{title =} \StringTok{'Percentage of Clients by Gender'}\NormalTok{, }\DataTypeTok{y =} \StringTok{''}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{card2_files/figure-latex/unnamed-chunk-12-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#What's the dstribution of Clients by Education level}
+\KeywordTok{ggplot}\NormalTok{(df[,}\KeywordTok{list}\NormalTok{(}\DataTypeTok{numPeps =}\NormalTok{ .N), }\DataTypeTok{by =}\NormalTok{ .(Education_Level, Gender)], }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =} \KeywordTok{factor}\NormalTok{(Education_Level), }\DataTypeTok{y =}\NormalTok{ numPeps, }\DataTypeTok{fill =}\NormalTok{ Gender)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_bar}\NormalTok{(}\DataTypeTok{stat =} \StringTok{'identity'}\NormalTok{, }\DataTypeTok{position =} \StringTok{'dodge'}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{labs}\NormalTok{( }\DataTypeTok{x =} \StringTok{'Education'}\NormalTok{, }\DataTypeTok{y =} \StringTok{'Number of Clients'}\NormalTok{, }\DataTypeTok{title =} \StringTok{'Education level  by Gender'}\NormalTok{, }\DataTypeTok{fill =} \StringTok{'Gender'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{card2_files/figure-latex/unnamed-chunk-13-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Percentage of Customers by Martical Status, Education level and Gender}
+\KeywordTok{ggplot}\NormalTok{(df[, }\KeywordTok{list}\NormalTok{(.N), }\DataTypeTok{by =}\NormalTok{ .(Marital_Status, Education_Level, Gender)], }\KeywordTok{aes}\NormalTok{(}\KeywordTok{factor}\NormalTok{(Education_Level), N, }\DataTypeTok{fill =}\NormalTok{ Marital_Status)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_bar}\NormalTok{( }\DataTypeTok{stat =} \StringTok{'identity'}\NormalTok{, }\DataTypeTok{position =} \StringTok{'dodge'}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{facet_wrap}\NormalTok{(.}\OperatorTok{~}\NormalTok{Gender) }\OperatorTok{+}\StringTok{ }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{'Education'}\NormalTok{, }\DataTypeTok{y =} \StringTok{'Number of Clients'}\NormalTok{, }\DataTypeTok{fill =} \StringTok{'Martial Status'}\NormalTok{,}
+                              \DataTypeTok{title =} \StringTok{'Gender by Education Level and Marital Status'}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{), }\DataTypeTok{axis.text.x =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{angle =} \DecValTok{90}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{card2_files/figure-latex/unnamed-chunk-14-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Average income by Age Group }
+\CommentTok{#14-25 --> Trailing Millennials}
+\CommentTok{#26-31 --> Leading Millennials}
+\CommentTok{#32-48 --> Generation X }
+\CommentTok{#49-67 --> Baby Boomers}
+\CommentTok{#68+ --> Senior Citizens }
+
+\NormalTok{df[,Age_Group }\OperatorTok{:}\ErrorTok{=}\StringTok{ }\KeywordTok{fcase}\NormalTok{(}\KeywordTok{between}\NormalTok{(Customer_Age, }\DecValTok{14}\NormalTok{, }\DecValTok{25}\NormalTok{), }\StringTok{'Trailing Millennials'}\NormalTok{,}
+                       \KeywordTok{between}\NormalTok{(Customer_Age, }\DecValTok{26}\NormalTok{, }\DecValTok{31}\NormalTok{), }\StringTok{'Leading Millennials'}\NormalTok{,}
+                       \KeywordTok{between}\NormalTok{(Customer_Age, }\DecValTok{32}\NormalTok{, }\DecValTok{48}\NormalTok{), }\StringTok{'Generation X'}\NormalTok{,}
+                       \KeywordTok{between}\NormalTok{(Customer_Age, }\DecValTok{42}\NormalTok{, }\DecValTok{67}\NormalTok{), }\StringTok{'Baby Boomers'}\NormalTok{,}
+                       \KeywordTok{between}\NormalTok{(Customer_Age, }\DecValTok{68}\NormalTok{, }\DecValTok{1000}\NormalTok{), }\StringTok{'Senior Citizens '}\NormalTok{,}
+                       \DataTypeTok{default =} \StringTok{'Group Unkown'}\NormalTok{)]}
+\KeywordTok{ggplot}\NormalTok{(df[,}\KeywordTok{list}\NormalTok{(}\DataTypeTok{numPeps =}\NormalTok{ .N), Age_Group], }\KeywordTok{aes}\NormalTok{(}\StringTok{""}\NormalTok{, numPeps, }\DataTypeTok{fill =}\NormalTok{ Age_Group)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_bar}\NormalTok{(}\DataTypeTok{stat =} \StringTok{'identity'}\NormalTok{, }\DataTypeTok{width =} \DecValTok{5}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{coord_polar}\NormalTok{(}\DataTypeTok{theta =} \StringTok{'y'}\NormalTok{, }\DataTypeTok{start =} \DecValTok{0}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{title =} \StringTok{'Age Group'}\NormalTok{, }\DataTypeTok{x =} \StringTok{''}\NormalTok{, }\DataTypeTok{y =} \StringTok{''}\NormalTok{, }\DataTypeTok{fill =} \StringTok{'Attrition'}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_void}\NormalTok{()}\OperatorTok{+}\StringTok{ }\KeywordTok{scale_fill_brewer}\NormalTok{(}\DataTypeTok{palette =}\StringTok{'BrBG'}\NormalTok{) }\OperatorTok{+}\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_text}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{label =} \KeywordTok{paste}\NormalTok{(numPeps}\OperatorTok{/}\DecValTok{100}\NormalTok{,}\StringTok{"%"}\NormalTok{)), }\DataTypeTok{size =} \DecValTok{5}\NormalTok{, }\DataTypeTok{position =} \KeywordTok{position_stack}\NormalTok{(}\DataTypeTok{vjust =} \FloatTok{0.5}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{card2_files/figure-latex/unnamed-chunk-15-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Income Category Age Group}
+\KeywordTok{ggplot}\NormalTok{(df[, }\KeywordTok{list}\NormalTok{(.N), }\DataTypeTok{by =}\NormalTok{ .(Age_Group, Income_Category)], }\KeywordTok{aes}\NormalTok{(}\KeywordTok{factor}\NormalTok{(Income_Category), N, }\DataTypeTok{fill =}\NormalTok{ Age_Group)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_bar}\NormalTok{(}\DataTypeTok{stat =} \StringTok{'identity'}\NormalTok{, }\DataTypeTok{position =} \StringTok{'dodge'}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{scale_y_log10}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{'Income'}\NormalTok{, }\DataTypeTok{y =} \StringTok{"Clients"}\NormalTok{, }\DataTypeTok{fill =} \StringTok{'Age Group'}\NormalTok{, }\DataTypeTok{title =} \StringTok{'Income by Age Groups'}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{card2_files/figure-latex/unnamed-chunk-16-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Income Categroy by Education level }
+\KeywordTok{ggplot}\NormalTok{(df[, }\KeywordTok{list}\NormalTok{(.N), }\DataTypeTok{by =}\NormalTok{ .(Education_Level, Income_Category, Gender)], }\KeywordTok{aes}\NormalTok{(}\KeywordTok{factor}\NormalTok{(Income_Category), N, }\DataTypeTok{fill =}\NormalTok{Education_Level)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_col}\NormalTok{(}\DataTypeTok{width =} \FloatTok{0.8}\NormalTok{ ,}\DataTypeTok{position =} \KeywordTok{position_dodge}\NormalTok{()) }\OperatorTok{+}\StringTok{ }\KeywordTok{scale_y_log10}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{facet_wrap}\NormalTok{(}\OperatorTok{~}\NormalTok{Gender) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{labs}\NormalTok{( }\DataTypeTok{x =} \StringTok{'Income'}\NormalTok{, }\DataTypeTok{y =} \StringTok{'Clients'}\NormalTok{, }\DataTypeTok{fill =} \StringTok{'Education Level'}\NormalTok{, }\DataTypeTok{title =} \StringTok{'Income Level by Education based on Gender'}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{), }\DataTypeTok{axis.text.x =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{angle =} \DecValTok{90}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{card2_files/figure-latex/unnamed-chunk-17-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Income Category by Martial Status}
+\KeywordTok{ggplot}\NormalTok{(df[, }\KeywordTok{list}\NormalTok{(.N), }\DataTypeTok{by =}\NormalTok{ .(Income_Category, Marital_Status)], }\KeywordTok{aes}\NormalTok{(}\KeywordTok{factor}\NormalTok{(Income_Category),N, }\DataTypeTok{fill =}\NormalTok{ Marital_Status)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_bar}\NormalTok{(}\DataTypeTok{stat =} \StringTok{'identity'}\NormalTok{, }\DataTypeTok{position =} \StringTok{'dodge'}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{scale_y_log10}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{)) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{'Income'}\NormalTok{, }\DataTypeTok{y =} \StringTok{'Clients '}\NormalTok{, }\DataTypeTok{fill =} \StringTok{'Martial Status'}\NormalTok{,}\DataTypeTok{title =} \StringTok{'Income Catergory by Marital Status '}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{card2_files/figure-latex/unnamed-chunk-18-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Age Group vs Attrition }
+\NormalTok{h <-}\StringTok{ }\NormalTok{df[, }\KeywordTok{list}\NormalTok{(}\DataTypeTok{numPeps =}\NormalTok{ .N), by=}\StringTok{ }\NormalTok{.(Age_Group,Attrition_Flag )]}
+\NormalTok{h}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##              Age_Group    Attrition_Flag numPeps
+## 1:        Generation X Existing Customer    4820
+## 2:        Baby Boomers Existing Customer    3366
+## 3:        Baby Boomers Attrited Customer     655
+## 4:        Generation X Attrited Customer     926
+## 5:    Senior Citizens  Existing Customer       3
+## 6:    Senior Citizens  Attrited Customer       1
+## 7: Leading Millennials Existing Customer     311
+## 8: Leading Millennials Attrited Customer      45
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ggplot}\NormalTok{(h, }\KeywordTok{aes}\NormalTok{(}\KeywordTok{factor}\NormalTok{(Age_Group), numPeps, }\DataTypeTok{fill =}\NormalTok{ Attrition_Flag)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_bar}\NormalTok{(}\DataTypeTok{stat =} \StringTok{'identity'}\NormalTok{, }\DataTypeTok{position =} \StringTok{'dodge'}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{scale_y_log10}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{labs}\NormalTok{( }\DataTypeTok{title =} \StringTok{'Attrition on each Age Level'}\NormalTok{, }\DataTypeTok{x =} \StringTok{'Age Group'}\NormalTok{, }\DataTypeTok{y =} \StringTok{'Clients'}\NormalTok{, }\DataTypeTok{fill =} \StringTok{'Attrition'}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{card2_files/figure-latex/unnamed-chunk-19-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Overall distribution of Age}
+\KeywordTok{ggplot}\NormalTok{(df[, .N, Customer_Age], }\KeywordTok{aes}\NormalTok{(Customer_Age,N)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_histogram}\NormalTok{(}\DataTypeTok{stat =} \StringTok{'identity'}\NormalTok{, }\DataTypeTok{binwidth =} \DecValTok{10}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{title =} \StringTok{'Age Distribution'}\NormalTok{, }\DataTypeTok{x =} \StringTok{'Age'}\NormalTok{, }\DataTypeTok{y =} \StringTok{'Clients'}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: Ignoring unknown parameters: binwidth, bins, pad
+\end{verbatim}
+
+\includegraphics{card2_files/figure-latex/unnamed-chunk-20-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Age Distribution of Attrition }
+\KeywordTok{ggplot}\NormalTok{(df[,.(Customer_Age,Attrition_Flag)], }\KeywordTok{aes}\NormalTok{(Attrition_Flag, Customer_Age, }\DataTypeTok{fill =}\NormalTok{ Attrition_Flag)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_boxplot}\NormalTok{() }\OperatorTok{+}
+\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{title =} \StringTok{'Age Stastics by Attrition'}\NormalTok{, }\DataTypeTok{x =} \StringTok{''}\NormalTok{, }\DataTypeTok{y =} \StringTok{'Summary'}\NormalTok{, }\DataTypeTok{fill =} \StringTok{'Attrition'}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{card2_files/figure-latex/unnamed-chunk-21-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Number of dependents on card by Attrition Level}
+\NormalTok{i <-}\StringTok{ }\NormalTok{df[,.N, by =}\StringTok{ }\NormalTok{.(Dependent_count, Attrition_Flag, Gender)][}\KeywordTok{order}\NormalTok{(Dependent_count)]}
+\NormalTok{i}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##     Dependent_count    Attrition_Flag Gender    N
+##  1:               0 Existing Customer      M  362
+##  2:               0 Attrited Customer      F   77
+##  3:               0 Existing Customer      F  407
+##  4:               0 Attrited Customer      M   58
+##  5:               1 Existing Customer      M  742
+##  6:               1 Existing Customer      F  827
+##  7:               1 Attrited Customer      F  169
+##  8:               1 Attrited Customer      M  100
+##  9:               2 Existing Customer      M 1078
+## 10:               2 Existing Customer      F 1160
+## 11:               2 Attrited Customer      M  189
+## 12:               2 Attrited Customer      F  228
+## 13:               3 Existing Customer      M 1106
+## 14:               3 Existing Customer      F 1144
+## 15:               3 Attrited Customer      M  210
+## 16:               3 Attrited Customer      F  272
+## 17:               4 Existing Customer      F  695
+## 18:               4 Existing Customer      M  619
+## 19:               4 Attrited Customer      F  154
+## 20:               4 Attrited Customer      M  106
+## 21:               5 Existing Customer      F  195
+## 22:               5 Existing Customer      M  165
+## 23:               5 Attrited Customer      F   30
+## 24:               5 Attrited Customer      M   34
+##     Dependent_count    Attrition_Flag Gender    N
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ggplot}\NormalTok{(i, }\KeywordTok{aes}\NormalTok{(}\KeywordTok{factor}\NormalTok{(Dependent_count),N, }\DataTypeTok{fill =}\NormalTok{ Attrition_Flag)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_bar}\NormalTok{( }\DataTypeTok{stat =} \StringTok{'identity'}\NormalTok{, }\DataTypeTok{position =} \StringTok{'dodge'}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{facet_wrap}\NormalTok{(}\OperatorTok{~}\NormalTok{Gender) }\OperatorTok{+}\StringTok{ }\KeywordTok{labs}\NormalTok{( }\DataTypeTok{title =} \StringTok{'Distribution of dependent count based on Gender'}\NormalTok{, }\DataTypeTok{x =} \StringTok{'Dependents'}\NormalTok{,}\DataTypeTok{y =} \StringTok{'Number of People'}\NormalTok{, }
+                              \DataTypeTok{fill =} \StringTok{'Attrition'}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{card2_files/figure-latex/unnamed-chunk-22-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Precentage of Education }
+\KeywordTok{ggplot}\NormalTok{(df[, .N, Education_Level], }\KeywordTok{aes}\NormalTok{(}\StringTok{''}\NormalTok{,N, }\DataTypeTok{fill =}\NormalTok{ Education_Level)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_bar}\NormalTok{(}\DataTypeTok{stat =} \StringTok{'identity'}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{coord_polar}\NormalTok{(}\DataTypeTok{theta =} \StringTok{'y'}\NormalTok{,}\DataTypeTok{start =} \DecValTok{0}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_void}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{scale_fill_brewer}\NormalTok{(}\DataTypeTok{palette =} \StringTok{'Dark2'}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_text}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{label =} \KeywordTok{paste}\NormalTok{(N}\OperatorTok{/}\DecValTok{100}\NormalTok{,}\StringTok{"%"}\NormalTok{)), }\DataTypeTok{size =} \DecValTok{5}\NormalTok{, }\DataTypeTok{position =} \KeywordTok{position_stack}\NormalTok{(}\DataTypeTok{vjust =} \FloatTok{0.5}\NormalTok{)) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{title =} \StringTok{'Precentage of Clients based on Education'}\NormalTok{, }\DataTypeTok{x =} \StringTok{""}\NormalTok{, }\DataTypeTok{y =} \StringTok{''}\NormalTok{, }\DataTypeTok{fill =} \StringTok{'Education Level'}\NormalTok{) }
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{card2_files/figure-latex/unnamed-chunk-23-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Precentage of Education }
+\KeywordTok{ggplot}\NormalTok{(df[Gender }\OperatorTok{==}\StringTok{ 'F'}\NormalTok{, .N, Education_Level], }\KeywordTok{aes}\NormalTok{(}\StringTok{''}\NormalTok{,N, }\DataTypeTok{fill =}\NormalTok{ Education_Level)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_bar}\NormalTok{(}\DataTypeTok{stat =} \StringTok{'identity'}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{coord_polar}\NormalTok{(}\DataTypeTok{theta =} \StringTok{'y'}\NormalTok{,}\DataTypeTok{start =} \DecValTok{0}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_void}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{scale_fill_brewer}\NormalTok{(}\DataTypeTok{palette =} \StringTok{'Dark2'}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_text}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{label =} \KeywordTok{paste}\NormalTok{(N}\OperatorTok{/}\DecValTok{100}\NormalTok{,}\StringTok{"%"}\NormalTok{)), }\DataTypeTok{size =} \DecValTok{5}\NormalTok{, }\DataTypeTok{position =} \KeywordTok{position_stack}\NormalTok{(}\DataTypeTok{vjust =} \FloatTok{0.5}\NormalTok{)) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{title =} \StringTok{'Precentage of Clients based on Education \{Females Only\}'}\NormalTok{, }\DataTypeTok{x =} \StringTok{""}\NormalTok{, }\DataTypeTok{y =} \StringTok{''}\NormalTok{, }\DataTypeTok{fill =} \StringTok{'Education Level'}\NormalTok{) }
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{card2_files/figure-latex/unnamed-chunk-24-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Precentage of Education }
+\KeywordTok{ggplot}\NormalTok{(df[Gender }\OperatorTok{==}\StringTok{ 'M'}\NormalTok{, .N, Education_Level], }\KeywordTok{aes}\NormalTok{(}\StringTok{''}\NormalTok{,N, }\DataTypeTok{fill =}\NormalTok{ Education_Level)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_bar}\NormalTok{(}\DataTypeTok{stat =} \StringTok{'identity'}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{coord_polar}\NormalTok{(}\DataTypeTok{theta =} \StringTok{'y'}\NormalTok{,}\DataTypeTok{start =} \DecValTok{0}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_void}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{scale_fill_brewer}\NormalTok{(}\DataTypeTok{palette =} \StringTok{'Dark2'}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_text}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{label =} \KeywordTok{paste}\NormalTok{(N}\OperatorTok{/}\DecValTok{100}\NormalTok{,}\StringTok{"%"}\NormalTok{)), }\DataTypeTok{size =} \DecValTok{5}\NormalTok{, }\DataTypeTok{position =} \KeywordTok{position_stack}\NormalTok{(}\DataTypeTok{vjust =} \FloatTok{0.5}\NormalTok{)) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{title =} \StringTok{'Precentage of Clients based on Education \{Male Only\}'}\NormalTok{, }\DataTypeTok{x =} \StringTok{""}\NormalTok{, }\DataTypeTok{y =} \StringTok{''}\NormalTok{, }\DataTypeTok{fill =} \StringTok{'Education Level'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{card2_files/figure-latex/unnamed-chunk-25-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Percentage of Card Users }
+\KeywordTok{ggplot}\NormalTok{(df[, .N, Card_Category], }\KeywordTok{aes}\NormalTok{(}\StringTok{''}\NormalTok{,N, }\DataTypeTok{fill =}\NormalTok{ Card_Category)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_bar}\NormalTok{(}\DataTypeTok{stat =} \StringTok{'identity'}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{coord_polar}\NormalTok{(}\DataTypeTok{theta =} \StringTok{'y'}\NormalTok{,}\DataTypeTok{start =} \DecValTok{0}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme_void}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{scale_fill_brewer}\NormalTok{(}\DataTypeTok{palette =} \StringTok{'BrBG'}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_text}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{label =} \KeywordTok{paste}\NormalTok{(N}\OperatorTok{/}\DecValTok{100}\NormalTok{,}\StringTok{"%"}\NormalTok{)), }\DataTypeTok{size =} \DecValTok{5}\NormalTok{, }\DataTypeTok{position =} \KeywordTok{position_stack}\NormalTok{(}\DataTypeTok{vjust =} \FloatTok{0.5}\NormalTok{)) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{title =} \StringTok{'Precentage of Clients based on Card Category'}\NormalTok{, }\DataTypeTok{x =} \StringTok{""}\NormalTok{, }\DataTypeTok{y =} \StringTok{''}\NormalTok{, }\DataTypeTok{fill =} \StringTok{'Card Type'}\NormalTok{) }
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{card2_files/figure-latex/unnamed-chunk-26-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Distribution of Bank Relationship  }
+\KeywordTok{ggplot}\NormalTok{(df[,.N,Months_on_book], }\KeywordTok{aes}\NormalTok{(}\KeywordTok{factor}\NormalTok{(Months_on_book),N)) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_histogram}\NormalTok{(}\DataTypeTok{stat =} \StringTok{'identity'}\NormalTok{, }\DataTypeTok{color =} \StringTok{'darkblue'}\NormalTok{,}\DataTypeTok{fill =} \StringTok{'lightblue'}\NormalTok{, }\DataTypeTok{bins =} \DecValTok{10}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{labs}\NormalTok{( }\DataTypeTok{title =} \StringTok{'Distribution of Bank Relation'}\NormalTok{, }\DataTypeTok{x =} \StringTok{'Relations'}\NormalTok{) }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: Ignoring unknown parameters: binwidth, bins, pad
+\end{verbatim}
+
+\includegraphics{card2_files/figure-latex/unnamed-chunk-27-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Distribution of Total Relation}
+\KeywordTok{ggplot}\NormalTok{(df[,.N, Total_Relationship_Count], }\KeywordTok{aes}\NormalTok{(}\KeywordTok{factor}\NormalTok{(Total_Relationship_Count),N, }\DataTypeTok{fill =} \KeywordTok{factor}\NormalTok{(Total_Relationship_Count))) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_bar}\NormalTok{(}\DataTypeTok{stat =} \StringTok{'identity'}\NormalTok{,}\DataTypeTok{position =} \StringTok{'dodge'}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{scale_fill_brewer}\NormalTok{(}\DataTypeTok{palette =} \StringTok{'RdBu'}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{)) }\OperatorTok{+}\StringTok{ }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{title =} \StringTok{'Total Number of Products with Bank'}\NormalTok{, }
+                                                       \DataTypeTok{x =} \StringTok{""}\NormalTok{, }\DataTypeTok{y =} \StringTok{''}\NormalTok{, }\DataTypeTok{fill =} \StringTok{'Production'}\NormalTok{) }
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{card2_files/figure-latex/unnamed-chunk-28-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Card Inactivity distribution }
+\KeywordTok{ggplot}\NormalTok{(df[,.N, Months_Inactive_}\DecValTok{12}\NormalTok{_mon], }\KeywordTok{aes}\NormalTok{(}\KeywordTok{factor}\NormalTok{(Months_Inactive_}\DecValTok{12}\NormalTok{_mon),N, }\DataTypeTok{fill =} \KeywordTok{factor}\NormalTok{(Months_Inactive_}\DecValTok{12}\NormalTok{_mon))) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_bar}\NormalTok{(}\DataTypeTok{stat =} \StringTok{'identity'}\NormalTok{,}\DataTypeTok{position =} \StringTok{'dodge'}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{scale_fill_brewer}\NormalTok{(}\DataTypeTok{palette =} \StringTok{'RdBu'}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{scale_y_log10}\NormalTok{() }\OperatorTok{+}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{)) }\OperatorTok{+}\StringTok{ }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{title =} \StringTok{'Total Number of Products with Bank'}\NormalTok{, }
+                                                       \DataTypeTok{x =} \StringTok{""}\NormalTok{, }\DataTypeTok{y =} \StringTok{''}\NormalTok{, }\DataTypeTok{fill =} \StringTok{'Inactivity Months'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{card2_files/figure-latex/unnamed-chunk-29-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Which Age Groups has the most inactivity by gender? }
+\NormalTok{df[,.N, by =}\StringTok{ }\NormalTok{.(Age_Group,Gender,Months_Inactive_}\DecValTok{12}\NormalTok{_mon)] }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##               Age_Group Gender Months_Inactive_12_mon    N
+##  1:        Generation X      M                      1  588
+##  2:        Baby Boomers      F                      1  463
+##  3:        Baby Boomers      M                      1  415
+##  4:        Generation X      F                      4  109
+##  5:        Generation X      M                      2  922
+##  6:        Generation X      M                      3 1054
+##  7:        Baby Boomers      M                      2  578
+##  8:        Baby Boomers      M                      6   30
+##  9:        Baby Boomers      F                      2  662
+## 10:        Generation X      M                      4   99
+## 11:        Generation X      F                      1  664
+## 12:        Baby Boomers      F                      3  815
+## 13:        Generation X      F                      3 1144
+## 14:        Baby Boomers      M                      3  702
+## 15:        Generation X      F                      2 1006
+## 16:        Generation X      M                      0    4
+## 17:        Baby Boomers      M                      5   37
+## 18:        Baby Boomers      F                      4  129
+## 19:        Baby Boomers      M                      4   92
+## 20:        Baby Boomers      F                      0   11
+## 21:    Senior Citizens       M                      2    2
+## 22:        Generation X      F                      5   56
+## 23:    Senior Citizens       M                      3    2
+## 24:        Generation X      M                      5   32
+## 25:        Baby Boomers      F                      6   31
+## 26:        Baby Boomers      F                      5   51
+## 27: Leading Millennials      M                      3   72
+## 28: Leading Millennials      M                      1   53
+## 29:        Generation X      M                      6   22
+## 30: Leading Millennials      M                      2   54
+## 31: Leading Millennials      F                      3   57
+## 32: Leading Millennials      F                      1   50
+## 33: Leading Millennials      M                      5    1
+## 34: Leading Millennials      F                      2   58
+## 35:        Generation X      F                      6   38
+## 36: Leading Millennials      M                      6    2
+## 37:        Baby Boomers      M                      0    5
+## 38: Leading Millennials      F                      4    3
+## 39: Leading Millennials      M                      4    3
+## 40:        Generation X      F                      0    8
+## 41: Leading Millennials      F                      0    1
+## 42: Leading Millennials      F                      6    1
+## 43: Leading Millennials      F                      5    1
+##               Age_Group Gender Months_Inactive_12_mon    N
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ggplot}\NormalTok{(df[,.N, }\DataTypeTok{by =}\NormalTok{ .(Age_Group,Gender,Months_Inactive_}\DecValTok{12}\NormalTok{_mon)], }\KeywordTok{aes}\NormalTok{(}\KeywordTok{factor}\NormalTok{(Months_Inactive_}\DecValTok{12}\NormalTok{_mon), N, }\DataTypeTok{col =}\NormalTok{ Gender, }\DataTypeTok{size =}\NormalTok{ N)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_point}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{facet_wrap}\NormalTok{(}\OperatorTok{~}\NormalTok{Age_Group) }\OperatorTok{+}\StringTok{ }\KeywordTok{scale_y_log10}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{title =} \StringTok{'Credit Card Inactivity by gender based on demographics'}\NormalTok{, }\DataTypeTok{x =} \StringTok{'Inactive Months'}\NormalTok{ , }\DataTypeTok{y =} \StringTok{''}\NormalTok{,}\DataTypeTok{size =} \StringTok{'Clients'}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{card2_files/figure-latex/unnamed-chunk-30-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Distribution of Credit Card Unitilization by Gender based}
+\KeywordTok{ggplot}\NormalTok{(df[,Avg_Utilization_Ratio, Gender], }\KeywordTok{aes}\NormalTok{(}\KeywordTok{factor}\NormalTok{(Gender), Avg_Utilization_Ratio)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_boxplot}\NormalTok{(}\DataTypeTok{fill =} \StringTok{'lightblue'}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{title =} \StringTok{'Card Utiliztion by Gender'}\NormalTok{, }\DataTypeTok{x =} \StringTok{'Gender'}\NormalTok{, }\DataTypeTok{y =} \StringTok{'Utilization_Ratio'}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{card2_files/figure-latex/unnamed-chunk-31-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Which Age Group uses card the most?}
+\KeywordTok{ggplot}\NormalTok{(df[,}\KeywordTok{list}\NormalTok{ ( }\DataTypeTok{AvgSum =} \KeywordTok{sum}\NormalTok{(Avg_Utilization_Ratio)), Age_Group], }\KeywordTok{aes}\NormalTok{(}\KeywordTok{factor}\NormalTok{(Age_Group), AvgSum)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_bar}\NormalTok{(}\DataTypeTok{stat =} \StringTok{'identity'}\NormalTok{, }\DataTypeTok{fill =} \StringTok{'lightblue'}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{title =} \StringTok{'Card Utiliztion by Age Group'}\NormalTok{, }\DataTypeTok{x =} \StringTok{'Age Group'}\NormalTok{, }\DataTypeTok{y =} \StringTok{'Utilization_Ratio'}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_text}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{label =} \KeywordTok{paste}\NormalTok{(AvgSum}\OperatorTok{/}\DecValTok{100}\NormalTok{,}\StringTok{"%"}\NormalTok{)), }\DataTypeTok{size =} \DecValTok{5}\NormalTok{, }\DataTypeTok{position =} \KeywordTok{position_stack}\NormalTok{(}\DataTypeTok{vjust =} \FloatTok{0.5}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{card2_files/figure-latex/unnamed-chunk-32-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Untilization by Age_Group and Gender}
+\KeywordTok{ggplot}\NormalTok{(df[,}\KeywordTok{list}\NormalTok{ ( }\DataTypeTok{AvgSum =} \KeywordTok{sum}\NormalTok{(Avg_Utilization_Ratio)), }\DataTypeTok{by =}\NormalTok{ .(Age_Group,Gender)], }\KeywordTok{aes}\NormalTok{(}\KeywordTok{factor}\NormalTok{(Age_Group), AvgSum, }\DataTypeTok{fill =}\NormalTok{ Gender)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_bar}\NormalTok{(}\DataTypeTok{stat =} \StringTok{'identity'}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{title =} \StringTok{'Card Utiliztion by Age Group & Gender'}\NormalTok{, }\DataTypeTok{x =} \StringTok{'Age_Group'}\NormalTok{, }\DataTypeTok{y =} \StringTok{'Utilization_Ratio'}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{), }\DataTypeTok{axis.text.x =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{angle =} \DecValTok{90}\NormalTok{)) }\OperatorTok{+}\StringTok{ }\KeywordTok{facet_wrap}\NormalTok{(}\OperatorTok{~}\NormalTok{Gender) }
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{card2_files/figure-latex/unnamed-chunk-33-1.pdf}
+
+\end{document}

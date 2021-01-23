@@ -1,0 +1,341 @@
+---
+title: "Exploartory Analysis on Credit Card Data"
+output:
+  html_notebook: default
+  pdf_document: default
+---
+
+Import Statements
+```{r}
+library(data.table)
+library(ggplot2)
+```
+################################################### Data / Data Cleaning/ Transformation ########################################
+The data will be cleaned, transformed and viewed before any analysis work is done on it 
+```{r}
+df <- fread('BankChurners.csv')
+df
+```
+```{r}
+#Column Name and Descriptions 
+#CLIENTNUM   :  Client number. Unique identifier for the customer holding the account
+#Attrition_Flag: Internal event (customer activity) variable - if the account is closed then 1 else 0
+#Customer_Age:   Demographic variable - Customer's Age in Years
+#Gender      :   Demographic variable - M=Male, F=Female
+#Dependent_count:Demographic variable - Number of dependents
+#Education_Level: Demographic variable - Educational Qualification of the account holder (example: high school, college #graduate, etc.)
+#Marital_Status : Demographic variable - Married, Single, Divorced, Unknown
+#Income_Category: Demographic variable - Annual Income Category of the account holder (< $40K, $40K - 60K, $60K - $80K, #$80K-$120K, > $120K, Unknown)
+#Card_Category  : Product Variable - Type of Card (Blue, Silver, Gold, Platinum)
+#Months_on_book : Period of relationship with bank
+#Total_Relationship_Count: Total no. of products held by the customer
+#Months_Inactive_12_mon  : No. of months inactive in the last 12 months
+#Contacts_Count_12_mon   : No. of Contacts in the last 12 months
+#Credit_Limit            : Credit Limit on the Credit Card
+#Total_Revolving_Bal     : Total Revolving Balance on the Credit Card
+#Avg_Open_To_Buy         : Open to Buy Credit Line (Average of last 12 months)
+#Total_Amt_Chng_Q4_Q1    : Change in Transaction Amount (Q4 over Q1)
+#Total_Trans_Amt         : Total Transaction Amount (Last 12 months)
+#Total_Trans_Ct          : Total Transaction Count (Last 12 months)
+#Total_Ct_Chng_Q4_Q1     : Change in Transaction Count (Q4 over Q1)
+#Avg_Utilization_Ratio   : Average Card Utilization Ratio  
+
+```
+
+
+
+```{r}
+#Structure of data
+str(df)
+```
+
+
+```{r}
+#Summary of data
+summary(df)
+```
+
+```{r}
+#Factorizing Categorical Variables
+df$CLIENTNUM <- as.factor(df$CLIENTNUM)
+df$Attrition_Flag <- as.factor(df$Attrition_Flag)
+df$Gender         <- as.factor(df$Gender)
+df$Education_Level <- as.factor(df$Education_Level)
+df$Marital_Status <- as.factor(df$Marital_Status)
+df$Income_Category <- as.factor(df$Income_Category)
+df$Card_Category <- as.factor(df$Card_Category)
+```
+
+
+```{r}
+#drop last two columns due to relevancy 
+df <- df[,-(22:23)]
+str(df)
+```
+
+```{r}
+################################################### Exploratory Data Analysis #################################################
+
+#Percentage of Attrition Flag 
+a <- df[,list(numPeps = .N), by = Attrition_Flag]
+a
+ggplot(a, aes("", numPeps, fill = Attrition_Flag)) + geom_bar(stat = 'identity') + coord_polar(theta = 'y', start = 0) +
+  labs(title = 'Attrition', x = '', y = '', fill = 'Attrition') + theme_void()+
+  theme(plot.title = element_text(hjust = 0.5)) + geom_text(aes(label = paste(numPeps/100,"%")), 
+                                                            size = 5, position = position_stack(vjust = 0.5))
+```
+```{r}
+#Precentage of Attrition Flag based on Gender 
+df[,.N, by = .(Attrition_Flag,Gender)]
+ggplot(df[,.N, by = .(Attrition_Flag,Gender)], aes(Gender, N, fill = Attrition_Flag)) + geom_bar(stat = 'identity',position = 'dodge') + labs(title = 'Attrition Flag based on Gender', x = 'Gender', y = '# of Clients', fill = 'Attrition') + 
+  theme(plot.title = element_text(hjust = 0.5))
+```
+```{r}
+#How does Attrition affect Marital Status?
+df[,.N, by = .(Attrition_Flag,Marital_Status)]
+ggplot(df[,.N, by = .(Attrition_Flag,Marital_Status)], aes(Marital_Status,N, fill = Attrition_Flag)) + geom_bar(stat = 'identity',position = 'dodge') + labs(title = 'Attrition Flag based on Martial Status', x = 'Marital Status', y = '# of Clients', fill = 'Attrition')  + theme(plot.title = element_text(hjust = 0.5))
+```
+
+```{r}
+#How does Atrition affect Education?
+ggplot( df[,.N, by = .(Attrition_Flag,Education_Level)], aes("", N, fill = Education_Level)) +  geom_bar(stat = 'identity', position = 'dodge') + scale_fill_brewer(palette = 'BrBG') + scale_y_log10() + theme(plot.title = element_text(hjust = 0.5)) + facet_wrap(~Attrition_Flag) + labs( title = 'Attrition By Education Level', x = 'Attrition', y = '# of Clients')
+```
+
+
+```{r}
+#Perecntage of Clients by Gender
+b<- df[,.N, by = Gender]
+b 
+ggplot(b, aes(" ", N, fill = Gender)) + geom_bar(stat = 'identity') + coord_polar(theta = 'y', start = 0) + 
+  theme_void()+ geom_text(aes(label = paste(N/100,"%")), size = 5, position = position_stack(vjust = 0.5))+ 
+  labs( title = 'Percentage of Clients by Gender', y = '') + theme(plot.title = element_text(hjust = 0.5))
+```
+
+```{r}
+#What's the dstribution of Clients by Education level
+ggplot(df[,list(numPeps = .N), by = .(Education_Level, Gender)], aes(x = factor(Education_Level), y = numPeps, fill = Gender)) +
+  geom_bar(stat = 'identity', position = 'dodge') + theme(plot.title = element_text(hjust = 0.5)) +
+  labs( x = 'Education', y = 'Number of Clients', title = 'Education level  by Gender', fill = 'Gender')
+```
+
+```{r}
+#Percentage of Customers by Martical Status, Education level and Gender
+ggplot(df[, list(.N), by = .(Marital_Status, Education_Level, Gender)], aes(factor(Education_Level), N, fill = Marital_Status)) + geom_bar( stat = 'identity', position = 'dodge') +
+  facet_wrap(.~Gender) + labs(x = 'Education', y = 'Number of Clients', fill = 'Martial Status',
+                              title = 'Gender by Education Level and Marital Status') +
+  theme(plot.title = element_text(hjust = 0.5), axis.text.x = element_text(angle = 90))
+```
+
+```{r}
+#Average income by Age Group 
+#14-25 --> Trailing Millennials
+#26-31 --> Leading Millennials
+#32-48 --> Generation X 
+#49-67 --> Baby Boomers
+#68+ --> Senior Citizens 
+
+df[,Age_Group := fcase(between(Customer_Age, 14, 25), 'Trailing Millennials',
+                       between(Customer_Age, 26, 31), 'Leading Millennials',
+                       between(Customer_Age, 32, 48), 'Generation X',
+                       between(Customer_Age, 42, 67), 'Baby Boomers',
+                       between(Customer_Age, 68, 1000), 'Senior Citizens ',
+                       default = 'Group Unkown')]
+ggplot(df[,list(numPeps = .N), Age_Group], aes("", numPeps, fill = Age_Group)) + geom_bar(stat = 'identity', width = 5) + coord_polar(theta = 'y', start = 0) + labs(title = 'Age Group', x = '', y = '', fill = 'Attrition') + theme_void()+ scale_fill_brewer(palette ='BrBG') +theme(plot.title = element_text(hjust = 0.5)) + geom_text(aes(label = paste(numPeps/100,"%")), size = 5, position = position_stack(vjust = 0.5))
+```
+
+```{r}
+#Income Category Age Group
+ggplot(df[, list(.N), by = .(Age_Group, Income_Category)], aes(factor(Income_Category), N, fill = Age_Group)) +
+  geom_bar(stat = 'identity', position = 'dodge') + 
+  scale_y_log10() + labs(x = 'Income', y = "Clients", fill = 'Age Group', title = 'Income by Age Groups') + 
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+```{r}
+#Income Categroy by Education level 
+ggplot(df[, list(.N), by = .(Education_Level, Income_Category, Gender)], aes(factor(Income_Category), N, fill =Education_Level)) + geom_col(width = 0.8 ,position = position_dodge()) + scale_y_log10() + facet_wrap(~Gender) + 
+  labs( x = 'Income', y = 'Clients', fill = 'Education Level', title = 'Income Level by Education based on Gender') +
+  theme(plot.title = element_text(hjust = 0.5), axis.text.x = element_text(angle = 90))
+
+```
+
+```{r}
+#Income Category by Martial Status
+ggplot(df[, list(.N), by = .(Income_Category, Marital_Status)], aes(factor(Income_Category),N, fill = Marital_Status)) +
+  geom_bar(stat = 'identity', position = 'dodge') + scale_y_log10() + theme(plot.title = element_text(hjust = 0.5)) + 
+  labs(x = 'Income', y = 'Clients ', fill = 'Martial Status',title = 'Income Catergory by Marital Status ')
+```
+
+```{r}
+#Age Group vs Attrition 
+h <- df[, list(numPeps = .N), by= .(Age_Group,Attrition_Flag )]
+h
+ggplot(h, aes(factor(Age_Group), numPeps, fill = Attrition_Flag)) + geom_bar(stat = 'identity', position = 'dodge') + 
+  scale_y_log10() + labs( title = 'Attrition on each Age Level', x = 'Age Group', y = 'Clients', fill = 'Attrition') +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+```{r}
+#Overall distribution of Age
+ggplot(df[, .N, Customer_Age], aes(Customer_Age,N)) + geom_histogram(stat = 'identity', binwidth = 10) + 
+  labs(title = 'Age Distribution', x = 'Age', y = 'Clients') + theme(plot.title = element_text(hjust = 0.5))
+
+```
+
+
+```{r}
+#Age Distribution of Attrition 
+ggplot(df[,.(Customer_Age,Attrition_Flag)], aes(Attrition_Flag, Customer_Age, fill = Attrition_Flag)) + geom_boxplot() +
+  labs(title = 'Age Stastics by Attrition', x = '', y = 'Summary', fill = 'Attrition') + 
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+```{r}
+#Number of dependents on card by Attrition Level
+i <- df[,.N, by = .(Dependent_count, Attrition_Flag, Gender)][order(Dependent_count)]
+i
+ggplot(i, aes(factor(Dependent_count),N, fill = Attrition_Flag)) + geom_bar( stat = 'identity', position = 'dodge') +
+  facet_wrap(~Gender) + labs( title = 'Distribution of dependent count based on Gender', x = 'Dependents',y = 'Number of People', 
+                              fill = 'Attrition') + theme(plot.title = element_text(hjust = 0.5))
+```
+
+
+```{r}
+#Precentage of Education 
+ggplot(df[, .N, Education_Level], aes('',N, fill = Education_Level)) + geom_bar(stat = 'identity') + 
+  coord_polar(theta = 'y',start = 0) + theme_void() + scale_fill_brewer(palette = 'Dark2') + 
+  geom_text(aes(label = paste(N/100,"%")), size = 5, position = position_stack(vjust = 0.5)) + 
+  theme(plot.title = element_text(hjust = 0.5)) +
+  labs(title = 'Precentage of Clients based on Education', x = "", y = '', fill = 'Education Level') 
+
+```
+
+
+```{r}
+#Precentage of Education 
+ggplot(df[Gender == 'F', .N, Education_Level], aes('',N, fill = Education_Level)) + geom_bar(stat = 'identity') + 
+  coord_polar(theta = 'y',start = 0) + theme_void() + scale_fill_brewer(palette = 'Dark2') + 
+  geom_text(aes(label = paste(N/100,"%")), size = 5, position = position_stack(vjust = 0.5)) + 
+  theme(plot.title = element_text(hjust = 0.5)) +
+  labs(title = 'Precentage of Clients based on Education {Females Only}', x = "", y = '', fill = 'Education Level') 
+
+```
+
+
+
+```{r}
+#Precentage of Education 
+ggplot(df[Gender == 'M', .N, Education_Level], aes('',N, fill = Education_Level)) + geom_bar(stat = 'identity') + 
+  coord_polar(theta = 'y',start = 0) + theme_void() + scale_fill_brewer(palette = 'Dark2') + 
+  geom_text(aes(label = paste(N/100,"%")), size = 5, position = position_stack(vjust = 0.5)) + 
+  theme(plot.title = element_text(hjust = 0.5)) +
+  labs(title = 'Precentage of Clients based on Education {Male Only}', x = "", y = '', fill = 'Education Level')
+```
+
+
+
+```{r}
+#Percentage of Card Users 
+ggplot(df[, .N, Card_Category], aes('',N, fill = Card_Category)) + geom_bar(stat = 'identity') + 
+  coord_polar(theta = 'y',start = 0) + theme_void() + scale_fill_brewer(palette = 'BrBG') + 
+  geom_text(aes(label = paste(N/100,"%")), size = 5, position = position_stack(vjust = 0.5)) + 
+  theme(plot.title = element_text(hjust = 0.5)) +
+  labs(title = 'Precentage of Clients based on Card Category', x = "", y = '', fill = 'Card Type') 
+```
+
+
+```{r}
+#Distribution of Bank Relationship  
+ggplot(df[,.N,Months_on_book], aes(factor(Months_on_book),N)) + theme(plot.title = element_text(hjust = 0.5)) +
+  geom_histogram(stat = 'identity', color = 'darkblue',fill = 'lightblue', bins = 10) + labs( title = 'Distribution of Bank Relation', x = 'Relations') 
+```
+
+```{r}
+#Distribution of Total Relation
+ggplot(df[,.N, Total_Relationship_Count], aes(factor(Total_Relationship_Count),N, fill = factor(Total_Relationship_Count))) + 
+  geom_bar(stat = 'identity',position = 'dodge') + scale_fill_brewer(palette = 'RdBu') + 
+  theme(plot.title = element_text(hjust = 0.5)) + labs(title = 'Total Number of Products with Bank', 
+                                                       x = "", y = '', fill = 'Production') 
+```
+
+```{r}
+#Card Inactivity distribution 
+ggplot(df[,.N, Months_Inactive_12_mon], aes(factor(Months_Inactive_12_mon),N, fill = factor(Months_Inactive_12_mon))) + 
+  geom_bar(stat = 'identity',position = 'dodge') + scale_fill_brewer(palette = 'RdBu') + scale_y_log10() +
+  theme(plot.title = element_text(hjust = 0.5)) + labs(title = 'Total Number of Products with Bank', 
+                                                       x = "", y = '', fill = 'Inactivity Months')
+```
+
+
+```{r}
+#Which Age Groups has the most inactivity by gender? 
+df[,.N, by = .(Age_Group,Gender,Months_Inactive_12_mon)] 
+ggplot(df[,.N, by = .(Age_Group,Gender,Months_Inactive_12_mon)], aes(factor(Months_Inactive_12_mon), N, col = Gender, size = N)) + geom_point() + facet_wrap(~Age_Group) + scale_y_log10() + labs(title = 'Credit Card Inactivity by gender based on demographics', x = 'Inactive Months' , y = '',size = 'Clients') + theme(plot.title = element_text(hjust = 0.5))
+```
+
+```{r}
+#Distribution of Credit Card Unitilization by Gender based
+ggplot(df[,Avg_Utilization_Ratio, Gender], aes(factor(Gender), Avg_Utilization_Ratio)) + geom_boxplot(fill = 'lightblue') + labs(title = 'Card Utiliztion by Gender', x = 'Gender', y = 'Utilization_Ratio') + theme(plot.title = element_text(hjust = 0.5))
+```
+
+
+```{r}
+#Which Age Group uses card the most?
+ggplot(df[,list ( AvgSum = sum(Avg_Utilization_Ratio)), Age_Group], aes(factor(Age_Group), AvgSum)) + geom_bar(stat = 'identity', fill = 'lightblue') + labs(title = 'Card Utiliztion by Age Group', x = 'Age Group', y = 'Utilization_Ratio') + theme(plot.title = element_text(hjust = 0.5)) + geom_text(aes(label = paste(AvgSum/100,"%")), size = 5, position = position_stack(vjust = 0.5))
+```
+
+
+```{r}
+#Untilization by Age_Group and Gender
+ggplot(df[,list ( AvgSum = sum(Avg_Utilization_Ratio)), by = .(Age_Group,Gender)], aes(factor(Age_Group), AvgSum, fill = Gender)) + geom_bar(stat = 'identity') + labs(title = 'Card Utiliztion by Age Group & Gender', x = 'Age_Group', y = 'Utilization_Ratio') + theme(plot.title = element_text(hjust = 0.5), axis.text.x = element_text(angle = 90)) + facet_wrap(~Gender) 
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
