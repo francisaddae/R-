@@ -1,0 +1,353 @@
+---
+title: "EDA for a Soccer Data"
+author: "Francis Addae"
+date: "Created on May25th, 2021\nLast Edited: `r format(Sys.time(), '%B %d, %Y')` "
+output:
+  pdf_document:
+    number_sections: yes
+    toc: yes
+  html_document:
+    df_print: paged
+    toc: yes
+fontsize: 12pt
+fig_height: 6
+fig_width: 4
+fig_align: "center"
+fig_show: "hold"
+warning: FALSE
+---
+
+
+```{r setup, include=FALSE, warning=FALSE,error=FALSE}
+library(dplyr)
+library(lubridate)
+library(ggplot2)
+library(forcats)
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
+```
+
+```{r}
+#setting theme# 
+mytheme <- theme_bw() +  theme(
+  plot.title = element_text(color = "black", size = 15, face = "bold", hjust = 0.5),
+  plot.subtitle = element_text(color = "black", face = "italic", hjust = 0.5),
+  plot.caption =  element_text(color = "red", face = "italic")
+)
+
+pietheme <- theme_void() +  theme(
+  plot.title = element_text(color = "black", size = 15, face = "bold", hjust = 0.5),
+  plot.subtitle = element_text(color = "black", face = "italic", hjust = 0.5),
+  plot.caption =  element_text(color = "red", face = "italic")
+)
+```
+
+# Summary
+
+   This is an Exploratory Data Analysis report which focuses on exploration and gaining insights.
+
+# Libraries 
+Below are the libraries used in this report:
+
+ * **dpylr** : For data query, wrangling, manipulation and transformation.
+ * **ggplot2**: For data visualization and info messaging 
+ * **forcats**: For categorical variable manipulation and wrangling
+ * **lubridates**: For date-time variable analysis and reporting
+
+# Data 
+
+This dataset is a soccer data obtained from [kaggle](https://www.kaggle.com/isabey/soccer-results-csv?select=results.csv).It is the collection of all intenational games played from the inception of association football or soccer. Association football's history and understanding can be found on [Wikipedia](https://en.wikipedia.org/wiki/History_of_association_football) 
+```{r}
+soc_1800_2020 <- read.csv('soccer_Data.csv')
+shape <- dim(soc_1800_2020)
+numCol <- ncol(soc_1800_2020)
+```
+
+
+## Summary
+
+This data is the collection of games played between nations from 1800's to 2020. It data has a dimension of `r shape`; such records are attributed to `r numCol`. Each record is match between two teams. Any recorded game has a unique home and away team. The attributes are: 
+
+* **date**:  Date when a game was played. This isnt a date-time variable.
+* **home_team**: Name of the home team 
+* **away_team**: Name of the away team
+* **home_score**: Score made by the home team in that particular match
+* **away_score**: Score made by the away team in that particular match
+* **tournament**: The type of tournamnet in whcih the game was held. 
+* **city**: The city where the game was officiated.
+* **country**: The country in which the city is located.
+* **neutral**: The advantageous venue of each match.Think of it as home_court advantage
+* **result**:  The final result of the game. 
+
+Although these attributes are great, the dataset could be served with attributes like; temperature, time, attendance, stadium name etc, which can give great insght as to how the overall game look like data-wise.
+
+## Cleaning 
+
+```{r}
+nulls <- sum(is.na(soc_1800_2020))
+```
+The dataset has `r nulls` null(s) values. Despite this, the dataset could use further cleaning if need be. For example, instead of have both the **city** and **country** as a seperate entity, they can be combined as a unique value. This can shorten the dimension of the data. A lot of cleaning can come in place after the formatting of the dataset. 
+
+
+
+## Data Formatting 
+As stated in the dataset, the columns needs to be stated in their correct data structures. The qualitative(categorical) varaibles are home & away teams, city, country,neutral and result. The quantitative(numerical) variables are home and away scores. Despite most qualitatives been strings, neutral needs to be an ordered level category( Win, draw, loss) in that order.This ordering can always change, therefore in this report it will be left as is.Date is formated in a Year-Month-Day format. 
+
+```{r}
+soc_1800_2020$date <-  ymd(soc_1800_2020$date)
+soc_1800_2020$home_team <- as.factor(soc_1800_2020$home_team)
+soc_1800_2020$away_team <- as.factor(soc_1800_2020$away_team)
+soc_1800_2020$home_score <- as.integer(soc_1800_2020$home_score)
+soc_1800_2020$away_score <- as.integer(soc_1800_2020$away_score)
+soc_1800_2020$tournament <- as.factor(soc_1800_2020$tournament)
+soc_1800_2020$city       <- as.factor(soc_1800_2020$city)
+soc_1800_2020$country    <- as.factor(soc_1800_2020$country)
+soc_1800_2020$neutral    <- as.factor(soc_1800_2020$neutral)
+soc_1800_2020$result     <- as.factor(soc_1800_2020$result) 
+```
+
+
+# Objective
+ 
+## First Objective
+  Using exploratory data analysis to gain insight into dataset and see meaningful questions to ask. This step is cruicial because it helps in viewing the data from an general point of view. 
+  
+  **1.How many games were played each year?**
+  
+```{r, message=FALSE}
+####  Exploratory Data Analysis #### 
+ans <- soc_1800_2020 %>% group_by(year(date)) %>% 
+  summarize(ct = n())
+ggplot(ans, aes(`year(date)`, ct)) + geom_point() + geom_smooth(method = 'lm') + mytheme +
+labs(x = 'Year', y= 'gamesPlayed', title = 'Number of games played each year', subtitle = 'Adding linear model curve to see trogectory')  
+```
+The number of games rose as year increases and this can be an indication of numerous teams joining alot of tournament and also hosting alot of games. Between 1920's and 1940's, it seems there was drastic decrese in games played. This could be due to World War 1 and the beginning of Wolrd War 2.
+
+
+ **2.What are the top 10 home teams in soccer?**
+ 
+```{r, message=FALSE,,out_width="70%"}
+ans <- soc_1800_2020 %>% select(home_team) %>% group_by(home_team) %>% summarize(ct = n()) %>% 
+  arrange(desc(ct)) %>% top_n(10) 
+ggplot(ans, aes(home_team, ct, size = ct)) + geom_point() + mytheme +
+  labs(x = 'home team', y = '# of games',title = 'Top 10 hometeams', size = 'Games Played', subtitle = 'These hometeams played alot games') + theme(axis.text.x = element_text(angle = 45))
+```
+It seems Brazil played the most games out of everyone in the entire dataset. Judging by this, it seems that European teams tend to play the most games as compared to South American teams despite Brazil and Argentina having more games than anyone.
+
+
+ **3.What are the top 10 away teams in soccer?** 
+ 
+```{r, message=FALSE}
+ans <- soc_1800_2020 %>% group_by(away_team) %>% summarize(ct = n()) %>% 
+  arrange(desc(ct)) %>% top_n(10) 
+ggplot(ans, aes(away_team, ct, size = ct)) + geom_point() +  mytheme +
+  labs(x = 'away team', y = '# of games',title = 'Top 10 awayteams', size = 'Games Played',subtitle = 'Most games played by the away teams') + theme(axis.text.x = element_text(angle = 45))
+```
+Argentina, England, Germany, Hungary & Sweden are some teams that appeared to be in the top 10 away teams as well as in the home teams. It seems we have Zambia, an African team which played the most away game the dataset. One interesetd thing to look at; can be taking a top 25 countries(both home and away) and see if how many times those two meet and the observations of each record. 
+
+ **4. Distribution of scores** 
+```{r, fig.show="hold", out.width="50%"}
+#Distribution of home scores?
+breaks <- c(0, min(soc_1800_2020$home_score) + 1, mean(soc_1800_2020$home_score) + 5,max(soc_1800_2020$home_score))
+ggplot(soc_1800_2020, aes(home_score)) + geom_histogram(breaks = breaks) +  mytheme +
+  labs(x = 'home_scores', y = 'scores count', title = 'Distribition of home scores')
+
+breaks <- c(0, min(soc_1800_2020$away_score) + 1, mean(soc_1800_2020$away_score) + 5,max(soc_1800_2020$away_score))
+ggplot(soc_1800_2020, aes(away_score)) + geom_histogram(breaks = breaks) +  mytheme +
+  labs(x = 'away_scores', y = 'scores count', title = 'Distribition of away scores')
+```
+
+It seems the range of the goals scored during each game changes by the minutes. Most of the scores were between 0-4, with the average goal for both teasm being around 2. The data can be cleaned, and there are multiple ways to do that:
+        * **Use the yearly average to change outliers scores greater than 5** 
+        
+        * **Use the mean of the entire score greater than 5**
+        
+        * **Find the number of games scored with each goal was socred and see if the outliers can be deleted**
+     
+All cleanups have consequences; due to the fact that the cut of point may chnage the outcome of result. And this can affect any other analysis further down.
+
+The graph below shows the total number of games scored each year and that tells the same story as the number of games played. 
+
+```{r,fig.show="hold", out.width="50%", fig.cap= 'Distributive summary statistics'}
+ggplot(soc_1800_2020, aes('',home_score)) + geom_boxplot() + mytheme + labs( x = 'home score', y = '')
+ggplot(soc_1800_2020, aes('',away_score)) + geom_boxplot() + mytheme + labs( x = 'away score', y = '')
+```
+
+```{r}
+#What's the total goals scored each year through out the dataset? 
+ans <- soc_1800_2020 %>% group_by(year(date)) %>% summarise(hmGoals = sum(home_score), ayGoals = sum(away_score)) %>% 
+  select(yr = `year(date)`, hmGoals, ayGoals)
+ggplot(ans, aes(x = yr)) + geom_line(aes(y=hmGoals), col = 'darkred') + 
+  geom_text(aes(x = 1990, y = 1550, label = 'home goal')) + geom_line(aes(y=ayGoals),col = 'darkblue') + 
+  geom_text(aes(x = 2005, y = 700, label = 'away goal')) + 
+  labs(x = 'year', y = 'Total Goals Scored',title = 'Summaztion of Goals throughout each year') + mytheme
+```
+Observation: As the number of games played increase so does the total goal scored. This was to be expected since the linear model shows a positive trend. It most most year, home team goals are mostly higher than away scores.
+
+
+ **5.What are the top 25 tournaments in played?**
+ 
+```{r, message=FALSE}
+ans <- soc_1800_2020 %>% group_by(tournament) %>% summarise(ct = n()) %>% 
+  arrange(desc(ct)) %>% top_n(25)
+ggplot(ans, aes(reorder(tournament, -ct), ct)) + geom_col() + coord_flip() +  mytheme +
+  labs(x = 'tournament', y = '# of games', title = 'Top 25 tournaments')
+```
+Friendly games are games where a person teams play to asset the abilities and needs of teams in terms of talents and improvements. Mainly the reason why we have alot of friendlies in the dataset. 
+ 
+ 
+  **6. What are the top 25 locations where a game was hosted?**
+  
+```{r, message=FALSE}
+#create a geolocation and see  
+ans <- soc_1800_2020 %>% mutate(location = paste0(city,',',country)) %>% group_by(location) %>% 
+  summarize(numUse = n()) %>% arrange(desc(numUse)) %>% top_n(25) 
+ggplot(ans,aes(location,numUse)) + geom_segment(
+  aes(x =location, xend = location, y = 100, yend=numUse), color = 'skyblue') + 
+  geom_point(color = 'blue', size = 4, alpha = 0.6) + coord_flip() +  mytheme +
+  labs(x = 'venue', y = '# of games', title = 'Top 25 locations where games were hosted')
+```
+The locations are a combinations of both the city and country. This makes the naming conversion a bit easier. The top 25 locations are scattered all over the world. This shows the randomization of locations where games were played.
+
+
+
+ **7. Distribution of Neutral Zones**
+ 
+```{r, message=FALSE,fig.show='hold'}
+#Distribution of Neutral zones through each year 
+ans <- soc_1800_2020 %>% group_by(neutral, year(date)) %>% summarize(ct = n()) %>% 
+  select(neutral, yr = `year(date)`, ct)
+ggplot(ans, aes(yr, ct, color = neutral)) + geom_line() + mytheme + 
+  labs(x = 'Date(year)', y = '# of neutral', title = 'Games played at home/away feilds vs neutral fields',
+       subtitle  = "Number of games played on with a home court-advantages")
+```
+Neutral refers to the home-court advantagement of the home_team playing. Its highly unlikely for a home team to have alot of games played on thier tuff especially if it's not a Friendly. 
+
+
+
+ **9. Results**
+ 
+```{r, message=FALSE}
+#Results throughout each year? 
+ans <- soc_1800_2020 %>% group_by(result, year(date)) %>% summarize(ct = n()) %>% 
+  select(result, yr = `year(date)`, ct)
+ggplot(ans, aes(yr, ct, color = result)) + geom_line() + mytheme +
+  labs(x = 'Date(year)', y = '# of neutral', title = 'Game results during each year', 
+       subtitle = 'Can a year change total winage of various teams') + scale_color_brewer(palette = 'Dark2')
+```
+
+The results are quite fascinating. It seems draw are quite irrelevant as we see alot of home and away wins. Most years seem to have away wins as compared to home wins. Away wins almost all the time expect between 1940-1965; and then picks up again in the late 1990's to elary 2000's. This trend is worth investigating. 
+
+
+Before we begin further investigating any interesting facts; the dataset has a location data which can't be pinpoint which continent that game was played. Due to this a second dataset containing names of countries need to join with the original dataset.  
+
+```{r}
+cont_and_tries <- read.csv('countries-continents.csv')
+shape <- dim(cont_and_tries)
+```
+
+This dataset consists of `r shape[1]` countries with its appropraite continent. A lot of countries change thier official names as things progress so this might make things abit difficult if we want to calculate for overall trends when it comes to. For example, if we want to see the win average of counties throughout the entire dataset, that will be a huge problem since a couple of countries change thier name alot and a couple of counties were colonies when those games were played. 
+
+
+```{r}
+soc_1800_2020 <- soc_1800_2020 %>% full_join(cont_and_tries, by = 'country')
+```
+ **10. What are the top 10 places to a game was hosted on each continent?** 
+ 
+This will help in knowing which countries were more favored and comparison can be down relative to the top 25 locations where a game was hosted. Before this, let's check if there are any abbrreviated country names like US or UK. Most abbreavitions are less or equal to 3 characters. 
+```{r}
+ans <- soc_1800_2020 %>% filter(nchar(country) <= 3)
+```
+There are `r ans[0]` abbreviations in the dataset. Therefore, we dont need to account for those issues later on.
+
+```{r}
+ans <- soc_1800_2020 %>%  group_by(continent) %>% tally()
+ggplot(ans, aes('',n, fill = continent)) + geom_col(stat = 'identity',width = 1, color = 'white') + 
+  coord_polar("y", start = 0) + pietheme + scale_fill_brewer(palette = 'Dark2') + 
+  geom_text(aes(label = paste(round(n/sum(n) * 100, 1),"%"), x = 1.24), position = position_stack(vjust = 0.3), col = 'white') + labs(title = 'Number of total games played on each continent',subtitle = 'Are some continents more prone to hosting games than orhers?')
+
+ans <- soc_1800_2020 %>% group_by(continent, country) %>% tally() %>% arrange(continent,country, desc(n)) %>% group_by(continent) %>% top_n(10,country) %>%  select(-n)
+
+ans$n <- rep(seq(1:10), 6)
+
+ans <- tidyr::spread(ans, continent, country)
+knitr::kable(ans, caption = "Top 10 hosted countries on each continent", 'pipe', align = "lcccccc")
+```
+
+
+## Second Objectives
+ 
+
+This section will focus on finding insghts of the data based the summary's found in the dataset. 
+
+ **1. What was the best month for a team to play a soccer game?** 
+ Solution: 
+    We need to do a group by using two fields. First by month then by team. The team is a little tricky since there are home and away teams, but this can be remeded using a case when statement. 
+
+```{r, message=F}
+one <- soc_1800_2020 %>% mutate(team = case_when(result == 'homeWin' ~ home_team, 
+                                          result == 'awayWin' ~ away_team))  %>% 
+  group_by(month(date, label = T), team,continent) %>% tally() %>% group_by(team) %>%  arrange(team,-n) %>% top_n(1)  %>% ungroup %>%  select(month = `month(date, label = T)`, win = n, continent)
+one <- one %>% mutate(ycol = row_number() * 2)
+
+ggplot(one, aes(month, ycol, size = win, color = continent)) + geom_jitter(alpha = 0.7) + scale_color_brewer(palette = 'Dark2') + scale_size(range = c(.1,12), name = "Win totals") + mytheme + 
+  labs(y = 'Country counts', x = 'Month', title = 'Best Month for a country to play a soccer game', subtitle = 'Are some countries better off not hosting games at all?')
+```
+ **2.From 1920's -1960's: **
+     *i. What are the changes in games played* 
+     *ii. Highest home/away goal scored in each year*
+     *iii. Rolling Average of total goals scored*
+     *iv.  Changes in game played on each continent*
+     
+Solution: 
+     Filter the dataset to games played between January,1920 - December,1960.
+```{r} 
+two <- soc_1800_2020 %>% filter(between(year(date), 1920, 1960))
+```
+     i. Count the number of games played per year, then use the lag function to calculate preceeding years of games played.
+```{r}
+two_i <- two %>% group_by(year(date)) %>% summarize(gamesPlayed = n()) %>% 
+  mutate(deltaGamesPlayed = gamesPlayed - lead(gamesPlayed,n= 1,default = 0)) %>% select(yr =`year(date)`, gm = gamesPlayed, del = deltaGamesPlayed)
+ggplot(two_i, aes(yr, gm, size = del)) + geom_jitter(alpha = 0.4, col = 'lightblue') + mytheme + 
+  labs(x = 'year(1920-1960)', y = 'games played', size = 'Changes in games played', title = 'Games played from 1920-1960 with game changes', subtitle ='Insight into games played during the period of sporadic World Wars' )
+```
+     ii. Add both home and away goals the subseting it by year. 
+     
+```{r}
+two_ii <- two %>% group_by(year(date)) %>% summarise(homeGoals = sum(home_score),
+                                                     awayGoals = sum(away_score)) %>% 
+  mutate(deltaGoals = homeGoals - awayGoals) %>% select(year = `year(date)`, homeGoals, awayGoals, deltaGoals)
+ggplot(two_ii, aes(year)) + geom_line(aes(y = homeGoals), col = 'red') + geom_line(aes(y = awayGoals)) + geom_col(aes(y=deltaGoals), fill = 'darkgreen') + scale_y_log10() + mytheme + 
+  labs( y = 'Goal', title = 'Changes in goals scored', subtitle = 'Is there significant change in goals scored')
+```
+     iii. Use the Answer from (ii) as base for the rolling average calculation. We can also calculate for the difference in goal scored in year. We will use the lead method to determine the changes before comparing them.
+     
+```{r, fig.show="hold", out.width="50%"}
+two_iii <- two_ii %>% mutate(deltaHm = (homeGoals - lead(homeGoals, default = 0))/ ( year - lead(year, default = 0)),
+                  deltaAw = (awayGoals - lead(awayGoals, default = 0))/ (year - lead(year, default = 0))) %>% select(year, deltaHm, deltaAw)
+
+ggplot(two_iii, aes(year)) + geom_jitter(aes(y = deltaHm), alpha = 0.6, col = 'darkred') + geom_jitter(aes(y = deltaAw), alpha = 0.7, col = 'darkblue') + mytheme + 
+  labs(title = 'Rolling Average of goals scored by both teams',subtitle = 'This illustrated the spread  according to the year', y = 'Goals')
+
+ggplot(two_iii, aes(year)) + geom_line(aes(y = deltaHm), col = 'darkred') + geom_line(aes(y = deltaAw),col = 'darkblue') + mytheme + labs(title = 'Rolling Average of goals scored by both teams',subtitle = 'This illustrated the trend of the spread', y = 'Goals')
+```
+     iv.Same concept as the (i) focusing only on the continent per year.
+     
+```{r}
+two_iv <- two %>% group_by(year(date), continent) %>% tally() %>% 
+  select (year = `year(date)`, continent, games = n) 
+ggplot(two_iv,aes( year, games , col=continent)) + geom_line() + scale_y_log10() + mytheme + 
+  scale_color_brewer(palette = 'Set2') + 
+  labs(y='# of games', title = 'Games hosted within each continent from 1920-1960', subtitle = 'Is there any continent that stands out besides Europe?', caption = "log 10(# of games)")
+```
+
+ **3. Excluding Friendly  and qualification games, Based on the top 10 tournamenet, what are the total goals scored during each decade?**
+ 
+```{r,message=F, out.width= "50%"}
+top10 <- soc_1800_2020 %>%  group_by(tournament) %>% filter(!grepl('qualification|Friendly', tournament)) %>% tally() %>% arrange(-n) %>%  top_n(n=10) %>% select(tournament)
+
+
+three <- soc_1800_2020 %>% filter(tournament %in% top10$tournament) %>% mutate(goal = home_score + away_score, decade = floor(year(date)/10)*10) %>% group_by(decade,tournament) %>% summarise(totalGoals = sum(goal))
+
+ggplot(three, aes(decade, totalGoals, col = tournament)) + geom_line(aes(linetype = tournament)) + scale_color_brewer(palette = 'Paired') + mytheme + labs(y = 'total Goal', title = 'Total goals scored by top 10 Championship tournament', subtitle = 'Are there significant changes in when it comes to goals scored?')
+
+```
